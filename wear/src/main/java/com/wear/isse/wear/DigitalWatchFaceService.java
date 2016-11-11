@@ -18,7 +18,7 @@ import android.view.WindowInsets;
 
 public class DigitalWatchFaceService extends CanvasWatchFaceService {
 
-    private static final String TAG = "CardBoundsWatchFace";
+    private static final String TAG = "DigitalWatchFaceService";
 
     private static final Typeface BOLD_TYPEFACE =
             Typeface.create(Typeface.SANS_SERIF, Typeface.BOLD);
@@ -33,15 +33,16 @@ public class DigitalWatchFaceService extends CanvasWatchFaceService {
     private class Engine extends CanvasWatchFaceService.Engine {
 
         static final int BORDER_WIDTH_PX = 5;
-        private static final int TEXT_DAY_COUNT_COLOR = Color.GRAY;
+
 
         final Rect mCardBounds = new Rect();
         final Paint mPaint = new Paint();
         private Paint mDayPaint;
+        private Paint mLinePaint = new Paint();
 
 
         private float mXOffset;
-        private float mXDistanceOffset;
+        private float mXDayOffset;
         private float mYOffset;
         private float mLineHeight;
 
@@ -58,11 +59,13 @@ public class DigitalWatchFaceService extends CanvasWatchFaceService {
                     .setPeekOpacityMode(WatchFaceStyle.PEEK_OPACITY_MODE_TRANSLUCENT)
                     .build());
 
-            mYOffset = getResources().getDimension(R.dimen.fit_y_offset);
-            mLineHeight = getResources().getDimension(R.dimen.fit_line_height);
+            mYOffset = getResources().getDimension(R.dimen.date_y_offset);
+            mLineHeight = getResources().getDimension(R.dimen.line_height);
 
-            mDayPaint = createTextPaint(TEXT_DAY_COUNT_COLOR);
-
+            final int colorDateInteractive = getResources().getColor(R.color.date_color);
+            final int colorDateAmbient = Color.GRAY;
+            mDayPaint = createTextPaint(isInAmbientMode() ? colorDateAmbient : colorDateInteractive);
+            mLinePaint.setColor(isInAmbientMode() ? colorDateAmbient : colorDateInteractive);
 
         }
 
@@ -100,14 +103,14 @@ public class DigitalWatchFaceService extends CanvasWatchFaceService {
             boolean isRound = insets.isRound();
             mXOffset = resources.getDimension(isRound
                     ? R.dimen.fit_x_offset_round : R.dimen.fit_x_offset);
-            mXDistanceOffset =
+            mXDayOffset =
                     resources.getDimension(
                             isRound ?
-                                    R.dimen.fit_steps_or_distance_x_offset_round :
-                                    R.dimen.fit_steps_or_distance_x_offset);
+                                    R.dimen.day_offset_round :
+                                    R.dimen.day_x_offset);
 
             mDayPaint.setTextSize(
-                    resources.getDimension(R.dimen.fit_steps_or_distance_text_size));
+                    resources.getDimension(R.dimen.day_text_size));
 
         }
 
@@ -145,15 +148,18 @@ public class DigitalWatchFaceService extends CanvasWatchFaceService {
             canvas.drawRect(mCardBounds, mPaint);
 
 
-            // Only render distance if there is no peek card, so they do not bleed into each other
+            // Only render day if there is no peek card, so they do not bleed into each other
             // in ambient mode.
+            String date = getString(R.string.day);
             if (getPeekCardPosition().isEmpty()) {
-                canvas.drawText(
-                        getString(R.string.day),
-                        mXDistanceOffset,
-                        mYOffset + mLineHeight,
-                        mDayPaint);
+                canvas.drawText(date, bounds.centerX() - (mDayPaint.measureText(date)) / 2, mYOffset + mLineHeight, mDayPaint);
             }
+
+            int line_width = 50;
+            int line_y_offset = 30;
+
+            canvas.drawLine(bounds.centerX() - line_width, bounds.exactCenterY() + line_y_offset, bounds.centerX() + line_width, bounds.exactCenterY() + line_y_offset, mLinePaint);
+
         }
     }
 }

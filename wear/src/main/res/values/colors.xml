@@ -4,4 +4,5 @@
     <color name="digital_am_pm">#aaaaa0</color>
     <color name="digital_colons">#aaaaa0</color>
     <color name="interactive_background">#03A9F4</color>
+    <color name="date_color">#99E8FF</color>
 </resources>
