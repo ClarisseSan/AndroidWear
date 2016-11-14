@@ -1,6 +1,8 @@
 package com.wear.isse.wear;
 
 import android.content.res.Resources;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -39,7 +41,9 @@ public class DigitalWatchFaceService extends CanvasWatchFaceService {
         final Paint mPaint = new Paint();
         private Paint mDayPaint;
         private Paint mLinePaint = new Paint();
-
+        private Paint mHighTempPaint;
+        private Paint mLowTempPaint;
+        private Paint mWeatherImagePaint = new Paint();
 
         private float mXOffset;
         private float mXDayOffset;
@@ -62,10 +66,12 @@ public class DigitalWatchFaceService extends CanvasWatchFaceService {
             mYOffset = getResources().getDimension(R.dimen.date_y_offset);
             mLineHeight = getResources().getDimension(R.dimen.line_height);
 
-            final int colorDateInteractive = getResources().getColor(R.color.date_color);
-            final int colorDateAmbient = Color.GRAY;
-            mDayPaint = createTextPaint(isInAmbientMode() ? colorDateAmbient : colorDateInteractive);
-            mLinePaint.setColor(isInAmbientMode() ? colorDateAmbient : colorDateInteractive);
+            final int colorBlueInteractive = getResources().getColor(R.color.date_color);
+            final int colorGrayAmbient = Color.GRAY;
+            mDayPaint = createTextPaint(isInAmbientMode() ? colorGrayAmbient : colorBlueInteractive);
+            mLinePaint.setColor(isInAmbientMode() ? colorGrayAmbient : colorBlueInteractive);
+            mHighTempPaint = createTextPaint(Color.WHITE);
+            mLowTempPaint = createTextPaint(isInAmbientMode() ? colorGrayAmbient : colorBlueInteractive);
 
         }
 
@@ -101,16 +107,12 @@ public class DigitalWatchFaceService extends CanvasWatchFaceService {
             // Load resources that have alternate values for round watches.
             Resources resources = DigitalWatchFaceService.this.getResources();
             boolean isRound = insets.isRound();
-            mXOffset = resources.getDimension(isRound
-                    ? R.dimen.fit_x_offset_round : R.dimen.fit_x_offset);
-            mXDayOffset =
-                    resources.getDimension(
-                            isRound ?
-                                    R.dimen.day_offset_round :
-                                    R.dimen.day_x_offset);
+            mXOffset = resources.getDimension(isRound ? R.dimen.fit_x_offset_round : R.dimen.fit_x_offset);
+            mXDayOffset = resources.getDimension(isRound ? R.dimen.day_offset_round : R.dimen.day_x_offset);
+            mDayPaint.setTextSize(resources.getDimension(R.dimen.day_text_size));
+            mHighTempPaint.setTextSize(resources.getDimension(R.dimen.temp_text_size));
+            mLowTempPaint.setTextSize(resources.getDimension(R.dimen.temp_text_size));
 
-            mDayPaint.setTextSize(
-                    resources.getDimension(R.dimen.day_text_size));
 
         }
 
@@ -152,13 +154,32 @@ public class DigitalWatchFaceService extends CanvasWatchFaceService {
             // in ambient mode.
             String date = getString(R.string.day);
             if (getPeekCardPosition().isEmpty()) {
+                //TODO: draw objects inside this if statement
                 canvas.drawText(date, bounds.centerX() - (mDayPaint.measureText(date)) / 2, mYOffset + mLineHeight, mDayPaint);
             }
 
+            //horizontal line
             int line_width = 50;
             int line_y_offset = 30;
-
             canvas.drawLine(bounds.centerX() - line_width, bounds.exactCenterY() + line_y_offset, bounds.centerX() + line_width, bounds.exactCenterY() + line_y_offset, mLinePaint);
+
+            //high temp
+            char degree = '\u00B0';
+            String high_temp = "25" + degree;
+            int temp_y_offset = 120;
+            canvas.drawText(high_temp, bounds.centerX() - (mHighTempPaint.measureText(high_temp)) / 2, bounds.exactCenterY() + temp_y_offset, mHighTempPaint);
+
+
+            //low temp
+            String low_temp = "16" + degree;
+            int temp_x_offset = 50;
+            canvas.drawText(low_temp, bounds.centerX() + temp_x_offset, bounds.exactCenterY() + temp_y_offset, mLowTempPaint);
+
+            //weather image
+            Bitmap image_weather = BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher);
+            int image_x_offset = 130;
+            int image_y_offset = 55;
+            canvas.drawBitmap(image_weather, bounds.centerX() - image_x_offset, bounds.exactCenterY() + image_y_offset, mWeatherImagePaint);
 
         }
     }
