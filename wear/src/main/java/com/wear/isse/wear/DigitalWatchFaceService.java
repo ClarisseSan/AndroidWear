@@ -46,9 +46,12 @@ public class DigitalWatchFaceService extends CanvasWatchFaceService {
         private Paint mWeatherImagePaint = new Paint();
 
         private float mXOffset;
-        private float mXDayOffset;
+        ;
         private float mYOffset;
         private float mLineHeight;
+
+        private int mExtra_image_paddingLeft;
+        private int mExtra_temp_paddingTop;
 
         @Override
         public void onCreate(SurfaceHolder holder) {
@@ -63,8 +66,6 @@ public class DigitalWatchFaceService extends CanvasWatchFaceService {
                     .setPeekOpacityMode(WatchFaceStyle.PEEK_OPACITY_MODE_TRANSLUCENT)
                     .build());
 
-            mYOffset = getResources().getDimension(R.dimen.date_y_offset);
-            mLineHeight = getResources().getDimension(R.dimen.line_height);
 
             final int colorBlueInteractive = getResources().getColor(R.color.date_color);
             final int colorGrayAmbient = Color.GRAY;
@@ -107,8 +108,13 @@ public class DigitalWatchFaceService extends CanvasWatchFaceService {
             // Load resources that have alternate values for round watches.
             Resources resources = DigitalWatchFaceService.this.getResources();
             boolean isRound = insets.isRound();
-            mXOffset = resources.getDimension(isRound ? R.dimen.fit_x_offset_round : R.dimen.fit_x_offset);
-            mXDayOffset = resources.getDimension(isRound ? R.dimen.day_offset_round : R.dimen.day_x_offset);
+
+            mYOffset = resources.getDimension(isRound ? R.dimen.date_y_offset_round : R.dimen.date_y_offset);
+            mLineHeight = getResources().getDimension(R.dimen.line_height);
+
+            mExtra_image_paddingLeft = (isRound ? 0 : 20);
+            mExtra_temp_paddingTop = (isRound ? 20 : 30);
+
             mDayPaint.setTextSize(resources.getDimension(R.dimen.day_text_size));
             mHighTempPaint.setTextSize(resources.getDimension(R.dimen.temp_text_size));
             mLowTempPaint.setTextSize(resources.getDimension(R.dimen.temp_text_size));
@@ -169,13 +175,13 @@ public class DigitalWatchFaceService extends CanvasWatchFaceService {
             String high_temp = "25" + degree;
             String low_temp = "16" + degree;
             String temp = high_temp + " " + low_temp;
-            float temp_y_offset = bounds.height() / 5 + 20;
+            float temp_y_offset = bounds.height() / 5 + mExtra_temp_paddingTop;
             canvas.drawText(temp, bounds.centerX() - (mHighTempPaint.measureText(high_temp)) / 2, bounds.exactCenterY() + temp_y_offset, mHighTempPaint);
 
 
             //weather image
             Bitmap image_weather = BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher);
-            int image_x_offset = bounds.width() / 3;
+            int image_x_offset = bounds.width() / 3 + mExtra_image_paddingLeft;
             float image_y_offset = temp_y_offset - image_weather.getHeight() / 2 - 15;
 
             canvas.drawBitmap(image_weather, bounds.centerX() - image_x_offset, bounds.exactCenterY() + image_y_offset, mWeatherImagePaint);
