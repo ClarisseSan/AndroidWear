@@ -45,8 +45,6 @@ public class DigitalWatchFaceService extends CanvasWatchFaceService {
         private Paint mLowTempPaint;
         private Paint mWeatherImagePaint = new Paint();
 
-        private float mXOffset;
-        ;
         private float mYOffset;
         private float mLineHeight;
 
@@ -170,13 +168,12 @@ public class DigitalWatchFaceService extends CanvasWatchFaceService {
             canvas.drawLine(bounds.centerX() - line_width, bounds.exactCenterY() + line_y_offset, bounds.centerX() + line_width, bounds.exactCenterY() + line_y_offset, mLinePaint);
 
 
-            //high temp
+            //high & low temp
             char degree = '\u00B0';
             String high_temp = "25" + degree;
             String low_temp = "16" + degree;
             String temp = high_temp + " " + low_temp;
             float temp_y_offset = bounds.height() / 5 + mExtra_temp_paddingTop;
-            canvas.drawText(temp, bounds.centerX() - (mHighTempPaint.measureText(high_temp)) / 2, bounds.exactCenterY() + temp_y_offset, mHighTempPaint);
 
 
             //weather image
@@ -184,8 +181,13 @@ public class DigitalWatchFaceService extends CanvasWatchFaceService {
             int image_x_offset = bounds.width() / 3 + mExtra_image_paddingLeft;
             float image_y_offset = temp_y_offset - image_weather.getHeight() / 2 - 15;
 
-            canvas.drawBitmap(image_weather, bounds.centerX() - image_x_offset, bounds.exactCenterY() + image_y_offset, mWeatherImagePaint);
-
+            if (!isInAmbientMode()) {
+                canvas.drawBitmap(image_weather, bounds.centerX() - image_x_offset, bounds.exactCenterY() + image_y_offset, mWeatherImagePaint);
+                canvas.drawText(temp, bounds.centerX() - (mHighTempPaint.measureText(high_temp)) / 2, bounds.exactCenterY() + temp_y_offset, mHighTempPaint);
+            } else {
+                //set temp to center
+                canvas.drawText(temp, bounds.centerX() - (mHighTempPaint.measureText(temp)) / 2, bounds.exactCenterY() + temp_y_offset, mHighTempPaint);
+            }
         }
     }
 }
