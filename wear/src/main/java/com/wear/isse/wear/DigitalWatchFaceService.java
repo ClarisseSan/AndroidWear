@@ -160,25 +160,24 @@ public class DigitalWatchFaceService extends CanvasWatchFaceService {
 
             //horizontal line
             int line_width = 50;
-            int line_y_offset = 30;
+            int line_y_offset = 20;
             canvas.drawLine(bounds.centerX() - line_width, bounds.exactCenterY() + line_y_offset, bounds.centerX() + line_width, bounds.exactCenterY() + line_y_offset, mLinePaint);
+
 
             //high temp
             char degree = '\u00B0';
             String high_temp = "25" + degree;
-            int temp_y_offset = 120;
-            canvas.drawText(high_temp, bounds.centerX() - (mHighTempPaint.measureText(high_temp)) / 2, bounds.exactCenterY() + temp_y_offset, mHighTempPaint);
-
-
-            //low temp
             String low_temp = "16" + degree;
-            int temp_x_offset = 50;
-            canvas.drawText(low_temp, bounds.centerX() + temp_x_offset, bounds.exactCenterY() + temp_y_offset, mLowTempPaint);
+            String temp = high_temp + " " + low_temp;
+            float temp_y_offset = bounds.height() / 5 + 20;
+            canvas.drawText(temp, bounds.centerX() - (mHighTempPaint.measureText(high_temp)) / 2, bounds.exactCenterY() + temp_y_offset, mHighTempPaint);
+
 
             //weather image
             Bitmap image_weather = BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher);
-            int image_x_offset = 130;
-            int image_y_offset = 55;
+            int image_x_offset = bounds.width() / 3;
+            float image_y_offset = temp_y_offset - image_weather.getHeight() / 2 - 15;
+
             canvas.drawBitmap(image_weather, bounds.centerX() - image_x_offset, bounds.exactCenterY() + image_y_offset, mWeatherImagePaint);
 
         }
