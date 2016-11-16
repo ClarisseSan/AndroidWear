@@ -158,35 +158,35 @@ public class DigitalWatchFaceService extends CanvasWatchFaceService {
             // in ambient mode.
             String date = getString(R.string.day);
             if (getPeekCardPosition().isEmpty()) {
-                //TODO: draw objects inside this if statement
                 canvas.drawText(date, bounds.centerX() - (mDayPaint.measureText(date)) / 2, mYOffset + mLineHeight, mDayPaint);
-            }
-
-            //horizontal line
-            int line_width = 50;
-            int line_y_offset = 20;
-            canvas.drawLine(bounds.centerX() - line_width, bounds.exactCenterY() + line_y_offset, bounds.centerX() + line_width, bounds.exactCenterY() + line_y_offset, mLinePaint);
 
 
-            //high & low temp
-            char degree = '\u00B0';
-            String high_temp = "25" + degree;
-            String low_temp = "16" + degree;
-            String temp = high_temp + " " + low_temp;
-            float temp_y_offset = bounds.height() / 5 + mExtra_temp_paddingTop;
+                //horizontal line
+                int line_width = 50;
+                int line_y_offset = 20;
+                canvas.drawLine(bounds.centerX() - line_width, bounds.exactCenterY() + line_y_offset, bounds.centerX() + line_width, bounds.exactCenterY() + line_y_offset, mLinePaint);
 
 
-            //weather image
-            Bitmap image_weather = BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher);
-            int image_x_offset = bounds.width() / 3 + mExtra_image_paddingLeft;
-            float image_y_offset = temp_y_offset - image_weather.getHeight() / 2 - 15;
+                //high & low temp
+                char degree = '\u00B0';
+                String high_temp = "25" + degree;
+                String low_temp = "16" + degree;
+                String temp = high_temp + " " + low_temp;
+                float temp_y_offset = bounds.height() / 5 + mExtra_temp_paddingTop;
 
-            if (!isInAmbientMode()) {
-                canvas.drawBitmap(image_weather, bounds.centerX() - image_x_offset, bounds.exactCenterY() + image_y_offset, mWeatherImagePaint);
-                canvas.drawText(temp, bounds.centerX() - (mHighTempPaint.measureText(high_temp)) / 2, bounds.exactCenterY() + temp_y_offset, mHighTempPaint);
-            } else {
-                //set temp to center
-                canvas.drawText(temp, bounds.centerX() - (mHighTempPaint.measureText(temp)) / 2, bounds.exactCenterY() + temp_y_offset, mHighTempPaint);
+
+                //weather image
+                Bitmap image_weather = BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher);
+                int image_x_offset = bounds.width() / 3 + mExtra_image_paddingLeft;
+                float image_y_offset = temp_y_offset - image_weather.getHeight() / 2 - 15;
+
+                if (!isInAmbientMode()) {
+                    canvas.drawBitmap(image_weather, bounds.centerX() - image_x_offset, bounds.exactCenterY() + image_y_offset, mWeatherImagePaint);
+                    canvas.drawText(temp, bounds.centerX() - (mHighTempPaint.measureText(high_temp)) / 2, bounds.exactCenterY() + temp_y_offset, mHighTempPaint);
+                } else {
+                    //set temp to center
+                    canvas.drawText(temp, bounds.centerX() - (mHighTempPaint.measureText(temp)) / 2, bounds.exactCenterY() + temp_y_offset, mHighTempPaint);
+                }
             }
         }
     }
