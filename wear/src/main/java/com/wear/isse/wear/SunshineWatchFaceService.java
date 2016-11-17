@@ -33,9 +33,9 @@ import com.google.android.gms.wearable.Wearable;
  * Created by isse on 11/11/2016.
  */
 
-public class DigitalWatchFaceService extends CanvasWatchFaceService {
+public class SunshineWatchFaceService extends CanvasWatchFaceService {
 
-    private static final String LOG_TAG = DigitalWatchFaceService.class.getSimpleName();
+    private static final String LOG_TAG = SunshineWatchFaceService.class.getSimpleName();
 
     private static final Typeface BOLD_TYPEFACE =
             Typeface.create(Typeface.SANS_SERIF, Typeface.BOLD);
@@ -86,7 +86,7 @@ public class DigitalWatchFaceService extends CanvasWatchFaceService {
         * To call the Data Layer API, create an instance of GoogleApiClient,
         * the main entry point for any of the Google Play services APIs.
         * */
-        GoogleApiClient mGoogleApiClient = new GoogleApiClient.Builder(DigitalWatchFaceService.this)
+        GoogleApiClient mGoogleApiClient = new GoogleApiClient.Builder(SunshineWatchFaceService.this)
                 .addConnectionCallbacks(this)
                 .addOnConnectionFailedListener(this)
                 .addApi(Wearable.API) // Request access only to the Wearable API
@@ -99,7 +99,7 @@ public class DigitalWatchFaceService extends CanvasWatchFaceService {
                 Log.d(LOG_TAG, "onCreate");
             }
             super.onCreate(holder);
-            setWatchFaceStyle(new WatchFaceStyle.Builder(DigitalWatchFaceService.this)
+            setWatchFaceStyle(new WatchFaceStyle.Builder(SunshineWatchFaceService.this)
                     .setCardPeekMode(WatchFaceStyle.PEEK_MODE_VARIABLE)
                     .setBackgroundVisibility(WatchFaceStyle.BACKGROUND_VISIBILITY_INTERRUPTIVE)
                     .setShowSystemUiTime(true)
@@ -146,7 +146,7 @@ public class DigitalWatchFaceService extends CanvasWatchFaceService {
             super.onApplyWindowInsets(insets);
 
             // Load resources that have alternate values for round watches.
-            Resources resources = DigitalWatchFaceService.this.getResources();
+            Resources resources = SunshineWatchFaceService.this.getResources();
             boolean isRound = insets.isRound();
 
             mYOffset = resources.getDimension(isRound ? R.dimen.date_y_offset_round : R.dimen.date_y_offset);
