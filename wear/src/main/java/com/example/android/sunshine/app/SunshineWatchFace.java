@@ -28,7 +28,6 @@ import com.google.android.gms.wearable.DataMapItem;
 import com.google.android.gms.wearable.PutDataMapRequest;
 import com.google.android.gms.wearable.PutDataRequest;
 import com.google.android.gms.wearable.Wearable;
-import com.wear.isse.wear.R;
 
 /**
  * Created by isse on 11/11/2016.
