@@ -292,6 +292,8 @@ public class SunshineWatchFace extends CanvasWatchFaceService {
         public void requestWeatherInfo() {
             PutDataMapRequest putDataMapRequest = PutDataMapRequest.create(WEATHER_PATH);
             PutDataRequest request = putDataMapRequest.asPutDataRequest();
+            //Flags this DataItem for urgent transport
+            request.setUrgent();
 
 
             Wearable.DataApi.putDataItem(mGoogleApiClient, request).setResultCallback(new ResultCallback<DataApi.DataItemResult>() {

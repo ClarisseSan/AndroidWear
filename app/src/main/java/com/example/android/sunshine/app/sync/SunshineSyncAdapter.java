@@ -465,6 +465,8 @@ public class SunshineSyncAdapter extends AbstractThreadedSyncAdapter implements 
 
         //Call PutDataMapRequest.asPutDataRequest() to obtain a PutDataRequest object.
         PutDataRequest request = putDataMapRequest.asPutDataRequest();
+        //Flags this DataItem for urgent transport
+        request.setUrgent();
 
         Log.d(LOG_TAG, "High:" + high + ", Low:" + low + ", Weather ID: " + weather_id);
 
