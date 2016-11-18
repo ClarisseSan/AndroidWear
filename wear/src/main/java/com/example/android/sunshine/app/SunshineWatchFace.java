@@ -34,9 +34,9 @@ import com.wear.isse.wear.R;
  * Created by isse on 11/11/2016.
  */
 
-public class SunshineWatchFaceService extends CanvasWatchFaceService {
+public class SunshineWatchFace extends CanvasWatchFaceService {
 
-    private static final String LOG_TAG = SunshineWatchFaceService.class.getSimpleName();
+    private static final String LOG_TAG = SunshineWatchFace.class.getSimpleName();
 
     private static final Typeface BOLD_TYPEFACE =
             Typeface.create(Typeface.SANS_SERIF, Typeface.BOLD);
@@ -87,7 +87,7 @@ public class SunshineWatchFaceService extends CanvasWatchFaceService {
         * To call the Data Layer API, create an instance of GoogleApiClient,
         * the main entry point for any of the Google Play services APIs.
         * */
-        GoogleApiClient mGoogleApiClient = new GoogleApiClient.Builder(SunshineWatchFaceService.this)
+        GoogleApiClient mGoogleApiClient = new GoogleApiClient.Builder(SunshineWatchFace.this)
                 .addConnectionCallbacks(this)
                 .addOnConnectionFailedListener(this)
                 .addApi(Wearable.API) // Request access only to the Wearable API
@@ -96,11 +96,9 @@ public class SunshineWatchFaceService extends CanvasWatchFaceService {
 
         @Override
         public void onCreate(SurfaceHolder holder) {
-            if (Log.isLoggable(LOG_TAG, Log.DEBUG)) {
-                Log.d(LOG_TAG, "onCreate");
-            }
+
             super.onCreate(holder);
-            setWatchFaceStyle(new WatchFaceStyle.Builder(SunshineWatchFaceService.this)
+            setWatchFaceStyle(new WatchFaceStyle.Builder(SunshineWatchFace.this)
                     .setCardPeekMode(WatchFaceStyle.PEEK_MODE_VARIABLE)
                     .setBackgroundVisibility(WatchFaceStyle.BACKGROUND_VISIBILITY_INTERRUPTIVE)
                     .setShowSystemUiTime(true)
@@ -147,7 +145,7 @@ public class SunshineWatchFaceService extends CanvasWatchFaceService {
             super.onApplyWindowInsets(insets);
 
             // Load resources that have alternate values for round watches.
-            Resources resources = SunshineWatchFaceService.this.getResources();
+            Resources resources = SunshineWatchFace.this.getResources();
             boolean isRound = insets.isRound();
 
             mYOffset = resources.getDimension(isRound ? R.dimen.date_y_offset_round : R.dimen.date_y_offset);

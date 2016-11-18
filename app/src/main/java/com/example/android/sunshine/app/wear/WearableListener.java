@@ -24,8 +24,8 @@ import com.google.android.gms.wearable.WearableListenerService;
  * More info: https://developer.android.com/training/wearables/data-layer/events.html
  */
 
-public class SunshineWearableListenerService extends WearableListenerService {
-    private static final String LOG_TAG = SunshineWearableListenerService.class.getSimpleName();
+public class WearableListener extends WearableListenerService {
+    private static final String LOG_TAG = WearableListener.class.getSimpleName();
 
     private static final String WEATHER_PATH = "/weather";
 
