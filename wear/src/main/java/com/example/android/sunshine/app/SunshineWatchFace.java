@@ -20,6 +20,7 @@ import android.view.WindowInsets;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.ResultCallback;
+import com.google.android.gms.wearable.Asset;
 import com.google.android.gms.wearable.DataApi;
 import com.google.android.gms.wearable.DataEvent;
 import com.google.android.gms.wearable.DataEventBuffer;
@@ -29,6 +30,7 @@ import com.google.android.gms.wearable.PutDataMapRequest;
 import com.google.android.gms.wearable.PutDataRequest;
 import com.google.android.gms.wearable.Wearable;
 
+import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -81,12 +83,12 @@ public class SunshineWatchFace extends CanvasWatchFaceService {
         private static final String KEY_HIGH = "high_temp";
         private static final String KEY_LOW = "low_temp";
         private static final String KEY_WEATHER_ID = "weather_id";
+        private static final String KEY_IMAGE = "weather_image";
 
 
         private String mHigh_temp;
         private String mLow_temp;
-        private String mWeatherIcon;
-
+        private Bitmap mWeather_icon;
 
         GoogleApiClient mGoogleApiClient;
 
@@ -120,7 +122,6 @@ public class SunshineWatchFace extends CanvasWatchFaceService {
             mDayPaint = createTextPaint(isInAmbientMode() ? colorGrayAmbient : colorBlueInteractive);
             mLinePaint.setColor(isInAmbientMode() ? colorGrayAmbient : colorBlueInteractive);
             mHighTempPaint = createTextPaint(Color.WHITE);
-
         }
 
         private Paint createTextPaint(int color) {
@@ -228,7 +229,6 @@ public class SunshineWatchFace extends CanvasWatchFaceService {
             Log.e(LOG_TAG, "DATE TODAY---> " + displayedDay);
 
 
-
             if (getPeekCardPosition().isEmpty()) {
                 canvas.drawText(displayedDay, bounds.centerX() - (mDayPaint.measureText(displayedDay)) / 2, mYOffset + mLineHeight, mDayPaint);
 
@@ -242,11 +242,8 @@ public class SunshineWatchFace extends CanvasWatchFaceService {
                 //high & low temp
                 char degree = '\u00B0';
                 String high_temp = "25" + degree;
-                String low_temp = "16" + degree;
-                //String temp = high_temp + " " + low_temp;
                 String temp = mHigh_temp + " " + mLow_temp;
                 float temp_y_offset = bounds.height() / 5 + mExtra_temp_paddingTop;
-
 
                 //weather image
                 Bitmap image_weather = BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher);
@@ -303,6 +300,14 @@ public class SunshineWatchFace extends CanvasWatchFaceService {
                             Log.d(LOG_TAG, "Low temperature not found");
                         }
 
+                        if (dataMap.containsKey(KEY_IMAGE)) {
+                            Asset weatherAsset = dataMap.getAsset(KEY_IMAGE);
+                            mWeather_icon = loadBitmapFromAsset(weatherAsset);
+                        } else {
+                            Log.d(LOG_TAG, "Image not found");
+                        }
+
+
 //                        if (dataMap.containsKey(KEY_WEATHER_ID)) {
 //                            int weatherId = dataMap.getInt(KEY_WEATHER_ID);
 //                            Drawable b = getResources().getDrawable(Utility.getIconResourceForWeatherCondition(weatherId));
@@ -320,6 +325,21 @@ public class SunshineWatchFace extends CanvasWatchFaceService {
             }
         }
 
+
+        public Bitmap loadBitmapFromAsset(Asset asset) {
+            if (asset == null) {
+                throw new IllegalArgumentException("Asset must be non-null");
+            }
+            // convert asset into a file descriptor and block until it's ready
+            InputStream assetInputStream = Wearable.DataApi.getFdForAsset(mGoogleApiClient, asset).await().getInputStream();
+
+            if (assetInputStream == null) {
+                Log.w(LOG_TAG, "Requested an unknown Asset.");
+                return null;
+            }
+            // decode the stream into a bitmap
+            return BitmapFactory.decodeStream(assetInputStream);
+        }
 
         public void requestWeatherInfo() {
             PutDataMapRequest putDataMapRequest = PutDataMapRequest.create(WEATHER_PATH);

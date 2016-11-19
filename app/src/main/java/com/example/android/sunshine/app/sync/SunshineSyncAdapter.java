@@ -41,6 +41,7 @@ import com.example.android.sunshine.app.muzei.WeatherMuzeiSource;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.ResultCallback;
+import com.google.android.gms.wearable.Asset;
 import com.google.android.gms.wearable.DataApi;
 import com.google.android.gms.wearable.PutDataMapRequest;
 import com.google.android.gms.wearable.PutDataRequest;
@@ -51,6 +52,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -91,6 +93,7 @@ public class SunshineSyncAdapter extends AbstractThreadedSyncAdapter implements 
     private static final String KEY_HIGH = "high_temp";
     private static final String KEY_LOW = "low_temp";
     private static final String KEY_WEATHER_ID = "weather_id";
+    private static final String KEY_IMAGE = "weather_image_haha";
 
     @Override
     public void onConnected(@Nullable Bundle bundle) {
@@ -463,12 +466,20 @@ public class SunshineSyncAdapter extends AbstractThreadedSyncAdapter implements 
         putDataMapRequest.getDataMap().putString(KEY_LOW, Utility.formatTemperature(getContext(), low));
         putDataMapRequest.getDataMap().putInt(KEY_WEATHER_ID, weather_id);
 
+        Asset asset = createAssetFromBitmap(weather_id);
+        putDataMapRequest.getDataMap().putAsset(KEY_IMAGE, asset);
+
         //Call PutDataMapRequest.asPutDataRequest() to obtain a PutDataRequest object.
         PutDataRequest request = putDataMapRequest.asPutDataRequest();
         //Flags this DataItem for urgent transport
         request.setUrgent();
 
+
         Log.d(LOG_TAG, "High:" + high + ", Low:" + low + ", Weather ID: " + weather_id);
+
+        if(asset!=null){
+            Log.d(LOG_TAG, "Asset is not null");
+        }
 
         //Call DataApi.putDataItem() to request the system to create the data item.
         Wearable.DataApi.putDataItem(mGoogleApiClient, request).setResultCallback(new ResultCallback<DataApi.DataItemResult>() {
@@ -482,6 +493,21 @@ public class SunshineSyncAdapter extends AbstractThreadedSyncAdapter implements 
             }
         });
 
+    }
+
+    /*
+    *method to send large blobs of binary data over the Bluetooth transport,
+    * such as images, attach an Asset to a data item and the put the data item
+     * into the replicated data store.
+    * */
+    private  Asset createAssetFromBitmap(int weatherId) {
+        //Get the drawable resource directly by Resource ID
+        int defaultImage = Utility.getArtResourceForWeatherCondition(weatherId);
+        Bitmap weather_icon = BitmapFactory.decodeResource(getContext().getResources(),defaultImage);
+
+        final ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
+        weather_icon.compress(Bitmap.CompressFormat.PNG, 100, byteStream);
+        return Asset.createFromBytes(byteStream.toByteArray());
     }
 
 
