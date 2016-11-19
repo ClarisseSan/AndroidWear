@@ -275,7 +275,7 @@ public class SunshineWatchFace extends CanvasWatchFaceService {
 
         @Override
         public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
-            Log.d(LOG_TAG, "onConnectionFailed: " + connectionResult);
+            Log.d(LOG_TAG, "onConnectionFailed: " + connectionResult.getErrorMessage());
         }
 
         @Override
