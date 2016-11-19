@@ -29,6 +29,12 @@ import com.google.android.gms.wearable.PutDataMapRequest;
 import com.google.android.gms.wearable.PutDataRequest;
 import com.google.android.gms.wearable.Wearable;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.Locale;
+
 /**
  * Created by isse on 11/11/2016.
  */
@@ -60,7 +66,6 @@ public class SunshineWatchFace extends CanvasWatchFaceService {
         private Paint mDayPaint;
         private Paint mLinePaint = new Paint();
         private Paint mHighTempPaint;
-        private Paint mLowTempPaint;
         private Paint mWeatherImagePaint = new Paint();
 
         private float mYOffset;
@@ -82,15 +87,8 @@ public class SunshineWatchFace extends CanvasWatchFaceService {
         private String mLow_temp;
         private String mWeatherIcon;
 
-        /*
-        * To call the Data Layer API, create an instance of GoogleApiClient,
-        * the main entry point for any of the Google Play services APIs.
-        * */
-        GoogleApiClient mGoogleApiClient = new GoogleApiClient.Builder(SunshineWatchFace.this)
-                .addConnectionCallbacks(this)
-                .addOnConnectionFailedListener(this)
-                .addApi(Wearable.API) // Request access only to the Wearable API
-                .build();
+
+        GoogleApiClient mGoogleApiClient;
 
 
         @Override
@@ -104,13 +102,24 @@ public class SunshineWatchFace extends CanvasWatchFaceService {
                     .setPeekOpacityMode(WatchFaceStyle.PEEK_OPACITY_MODE_TRANSLUCENT)
                     .build());
 
+            /*
+            * To call the Data Layer API, create an instance of GoogleApiClient,
+            * the main entry point for any of the Google Play services APIs.
+            * */
+            mGoogleApiClient = new GoogleApiClient.Builder(SunshineWatchFace.this)
+                    .addConnectionCallbacks(this)
+                    .addOnConnectionFailedListener(this)
+                    .addApi(Wearable.API) // Request access only to the Wearable API
+                    .build();
+
+
+            mGoogleApiClient.connect();
 
             final int colorBlueInteractive = getResources().getColor(R.color.date_color);
             final int colorGrayAmbient = Color.GRAY;
             mDayPaint = createTextPaint(isInAmbientMode() ? colorGrayAmbient : colorBlueInteractive);
             mLinePaint.setColor(isInAmbientMode() ? colorGrayAmbient : colorBlueInteractive);
             mHighTempPaint = createTextPaint(Color.WHITE);
-            mLowTempPaint = createTextPaint(isInAmbientMode() ? colorGrayAmbient : colorBlueInteractive);
 
         }
 
@@ -125,6 +134,7 @@ public class SunshineWatchFace extends CanvasWatchFaceService {
             paint.setAntiAlias(true);
             return paint;
         }
+
 
         @Override
         public void onAmbientModeChanged(boolean inAmbientMode) {
@@ -155,9 +165,6 @@ public class SunshineWatchFace extends CanvasWatchFaceService {
 
             mDayPaint.setTextSize(resources.getDimension(R.dimen.day_text_size));
             mHighTempPaint.setTextSize(resources.getDimension(R.dimen.temp_text_size));
-            mLowTempPaint.setTextSize(resources.getDimension(R.dimen.temp_text_size));
-
-
         }
 
         @Override
@@ -196,9 +203,33 @@ public class SunshineWatchFace extends CanvasWatchFaceService {
 
             // Only render day if there is no peek card, so they do not bleed into each other
             // in ambient mode.
-            String date = getString(R.string.day);
+
+            //Using the Gregorian Calendar Class to get current date
+            Calendar gc = new GregorianCalendar();
+            String myDate;
+
+            String day;
+            //Converting the integer value returned by Calendar.DAY_OF_WEEK to a human-readable String
+            day = gc.getDisplayName(Calendar.DAY_OF_WEEK, Calendar.SHORT, Locale.ENGLISH);
+            //iterating to the next day
+            gc.add(Calendar.DAY_OF_WEEK, 1);
+
+
+            SimpleDateFormat sdf = new SimpleDateFormat("MMMM dd");
+            Calendar c = Calendar.getInstance();
+            c.setTime(new Date()); // Now use today date.
+            c.add(Calendar.DATE, 0); // Adding today
+            myDate = sdf.format(c.getTime());
+
+            String displayedDay = day + ", " + myDate;
+
+
+            Log.e(LOG_TAG, "DATE TODAY---> " + displayedDay);
+
+
+
             if (getPeekCardPosition().isEmpty()) {
-                canvas.drawText(date, bounds.centerX() - (mDayPaint.measureText(date)) / 2, mYOffset + mLineHeight, mDayPaint);
+                canvas.drawText(displayedDay, bounds.centerX() - (mDayPaint.measureText(displayedDay)) / 2, mYOffset + mLineHeight, mDayPaint);
 
 
                 //horizontal line

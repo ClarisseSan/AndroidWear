@@ -142,6 +142,8 @@ public class SunshineSyncAdapter extends AbstractThreadedSyncAdapter implements 
         mGoogleApiClient = new GoogleApiClient.Builder(context)
                 .addApi(Wearable.API)
                 .build();
+
+        mGoogleApiClient.connect();
     }
 
     @Override
@@ -304,7 +306,6 @@ public class SunshineSyncAdapter extends AbstractThreadedSyncAdapter implements 
 
         try {
             JSONObject forecastJson = new JSONObject(forecastJsonStr);
-            Context context = getContext();
 
             // do we have an error?
             if (forecastJson.has(OWM_MESSAGE_CODE)) {
