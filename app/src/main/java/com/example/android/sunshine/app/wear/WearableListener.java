@@ -3,6 +3,7 @@ package com.example.android.sunshine.app.wear;
 import android.util.Log;
 
 import com.example.android.sunshine.app.sync.SunshineSyncAdapter;
+import com.google.android.gms.wearable.DataApi;
 import com.google.android.gms.wearable.DataEvent;
 import com.google.android.gms.wearable.DataEventBuffer;
 import com.google.android.gms.wearable.WearableListenerService;
@@ -56,5 +57,8 @@ public class WearableListener extends WearableListenerService {
             }
         }
     }
+
+
+
 
 }

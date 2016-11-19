@@ -222,6 +222,7 @@ public class SunshineWatchFace extends CanvasWatchFaceService {
             myDate = sdf.format(c.getTime());
 
             String displayedDay = day + ", " + myDate;
+            displayedDay = "Sat, November 19";
 
 
             Log.e(LOG_TAG, "DATE TODAY---> " + displayedDay);
