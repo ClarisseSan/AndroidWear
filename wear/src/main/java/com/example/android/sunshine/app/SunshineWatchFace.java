@@ -8,6 +8,8 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.Typeface;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -20,7 +22,6 @@ import android.view.WindowInsets;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.ResultCallback;
-import com.google.android.gms.wearable.Asset;
 import com.google.android.gms.wearable.DataApi;
 import com.google.android.gms.wearable.DataEvent;
 import com.google.android.gms.wearable.DataEventBuffer;
@@ -30,7 +31,6 @@ import com.google.android.gms.wearable.PutDataMapRequest;
 import com.google.android.gms.wearable.PutDataRequest;
 import com.google.android.gms.wearable.Wearable;
 
-import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -250,8 +250,12 @@ public class SunshineWatchFace extends CanvasWatchFaceService {
                 float image_y_offset = temp_y_offset - image_weather.getHeight() / 2 - 15;
 
                 if (!isInAmbientMode()) {
-                    canvas.drawBitmap(image_weather, bounds.centerX() - image_x_offset, bounds.exactCenterY() + image_y_offset, mWeatherImagePaint);
                     canvas.drawText(temp, bounds.centerX() - (mHighTempPaint.measureText(high_temp)) / 2, bounds.exactCenterY() + temp_y_offset, mHighTempPaint);
+
+                    if (mWeather_icon != null) {
+                        Bitmap scaledBitmap = Bitmap.createScaledBitmap(mWeather_icon,72,72,false);
+                        canvas.drawBitmap(scaledBitmap, bounds.centerX() - image_x_offset, bounds.exactCenterY() + image_y_offset, mWeatherImagePaint);
+                    }
                 } else {
                     //set temp to center
                     canvas.drawText(temp, bounds.centerX() - (mHighTempPaint.measureText(temp)) / 2, bounds.exactCenterY() + temp_y_offset, mHighTempPaint);
@@ -296,40 +300,26 @@ public class SunshineWatchFace extends CanvasWatchFaceService {
                             mLow_temp = dataMap.getString(KEY_LOW);
                             Log.d(LOG_TAG, "Low Temperature ==========>" + mLow_temp);
                         } else {
-                            Log.d(LOG_TAG, "Low temperature not found");
+                            Log.e(LOG_TAG, "Low temperature not found");
                         }
 
-//                        if (dataMap.containsKey(KEY_WEATHER_ID)) {
-//                            int weatherId = dataMap.getInt(KEY_WEATHER_ID);
-//                            Drawable b = getResources().getDrawable(Utility.getIconResourceForWeatherCondition(weatherId));
-//                            Bitmap icon = ((BitmapDrawable) b).getBitmap();
-//                            float scaledWidth = (mTextTempHighPaint.getTextSize() / icon.getHeight()) * icon.getWidth();
-//                            mWeatherIcon = Bitmap.createScaledBitmap(icon, (int) scaledWidth, (int) mTextTempHighPaint.getTextSize(), true);
-//
-//                        } else {
-//                            Log.d(TAG, "What? no weatherId?");
-//                        }
+
+                        if (dataMap.containsKey(KEY_WEATHER_ID)) {
+                            int weatherId = dataMap.getInt(KEY_WEATHER_ID);
+                            Log.d(LOG_TAG, "Weather ID ==========>" + weatherId);
+
+                            int defaultImage = Utility.getArtResourceForWeatherCondition(weatherId);
+                            Drawable imgWeather = getResources().getDrawable(defaultImage);
+                            mWeather_icon = ((BitmapDrawable) imgWeather).getBitmap();
+                        } else {
+                            Log.e(LOG_TAG, "Weather id not found");
+                            mWeather_icon = BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher);
+                        }
 
                         invalidate();
                     }
                 }
             }
-        }
-
-
-        public Bitmap loadBitmapFromAsset(Asset asset) {
-            if (asset == null) {
-                throw new IllegalArgumentException("Asset must be non-null");
-            }
-            // convert asset into a file descriptor and block until it's ready
-            InputStream assetInputStream = Wearable.DataApi.getFdForAsset(mGoogleApiClient, asset).await().getInputStream();
-
-            if (assetInputStream == null) {
-                Log.w(LOG_TAG, "Requested an unknown Asset.");
-                return null;
-            }
-            // decode the stream into a bitmap
-            return BitmapFactory.decodeStream(assetInputStream);
         }
 
         public void requestWeatherInfo() {
