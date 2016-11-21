@@ -83,7 +83,6 @@ public class SunshineWatchFace extends CanvasWatchFaceService {
         private static final String KEY_HIGH = "high_temp";
         private static final String KEY_LOW = "low_temp";
         private static final String KEY_WEATHER_ID = "weather_id";
-        private static final String KEY_IMAGE = "weather_image";
 
 
         private String mHigh_temp;
@@ -299,14 +298,6 @@ public class SunshineWatchFace extends CanvasWatchFaceService {
                         } else {
                             Log.d(LOG_TAG, "Low temperature not found");
                         }
-
-                        if (dataMap.containsKey(KEY_IMAGE)) {
-                            Asset weatherAsset = dataMap.getAsset(KEY_IMAGE);
-                            mWeather_icon = loadBitmapFromAsset(weatherAsset);
-                        } else {
-                            Log.d(LOG_TAG, "Image not found");
-                        }
-
 
 //                        if (dataMap.containsKey(KEY_WEATHER_ID)) {
 //                            int weatherId = dataMap.getInt(KEY_WEATHER_ID);
