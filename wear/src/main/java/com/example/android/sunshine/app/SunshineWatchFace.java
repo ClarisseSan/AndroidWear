@@ -69,6 +69,7 @@ public class SunshineWatchFace extends CanvasWatchFaceService {
         private Paint mLinePaint = new Paint();
         private Paint mHighTempPaint;
         private Paint mWeatherImagePaint = new Paint();
+        private Paint mNoDataPaint = new Paint();
 
         private float mYOffset;
         private float mLineHeight;
@@ -121,6 +122,7 @@ public class SunshineWatchFace extends CanvasWatchFaceService {
             mDayPaint = createTextPaint(isInAmbientMode() ? colorGrayAmbient : colorBlueInteractive);
             mLinePaint.setColor(isInAmbientMode() ? colorGrayAmbient : colorBlueInteractive);
             mHighTempPaint = createTextPaint(Color.WHITE);
+            mNoDataPaint = createTextPaint(Color.WHITE);
         }
 
         private Paint createTextPaint(int color) {
@@ -165,6 +167,7 @@ public class SunshineWatchFace extends CanvasWatchFaceService {
 
             mDayPaint.setTextSize(resources.getDimension(R.dimen.day_text_size));
             mHighTempPaint.setTextSize(resources.getDimension(R.dimen.temp_text_size));
+            mNoDataPaint.setTextSize(R.dimen.no_data_text_size);
         }
 
         @Override
@@ -241,7 +244,18 @@ public class SunshineWatchFace extends CanvasWatchFaceService {
                 //high & low temp
                 char degree = '\u00B0';
                 String high_temp = "25" + degree;
-                String temp = mHigh_temp + " " + mLow_temp;
+                String temp;
+
+                if (mHigh_temp == null && mLow_temp == null) {
+                    //inform user that there's no data in watch
+                    temp = getResources().getString(R.string.no_weather);
+                    mHighTempPaint.setTextSize(getResources().getDimension(R.dimen.no_data_text_size));
+                } else {
+                    //set weather data from phone
+                    temp = mHigh_temp + " " + mLow_temp;
+                    mHighTempPaint.setTextSize(getResources().getDimension(R.dimen.temp_text_size));
+                }
+
                 float temp_y_offset = bounds.height() / 5 + mExtra_temp_paddingTop;
 
                 //weather image
@@ -249,15 +263,19 @@ public class SunshineWatchFace extends CanvasWatchFaceService {
                 int image_x_offset = bounds.width() / 3 + mExtra_image_paddingLeft;
                 float image_y_offset = temp_y_offset - image_weather.getHeight() / 2 - 15;
 
+
                 if (!isInAmbientMode()) {
                     canvas.drawText(temp, bounds.centerX() - (mHighTempPaint.measureText(high_temp)) / 2, bounds.exactCenterY() + temp_y_offset, mHighTempPaint);
 
                     if (mWeather_icon != null) {
-                        Bitmap scaledBitmap = Bitmap.createScaledBitmap(mWeather_icon,72,72,false);
+                        Bitmap scaledBitmap = Bitmap.createScaledBitmap(mWeather_icon, 72, 72, false);
                         canvas.drawBitmap(scaledBitmap, bounds.centerX() - image_x_offset, bounds.exactCenterY() + image_y_offset, mWeatherImagePaint);
+                    } else {
+                        //draw default image
+                        canvas.drawBitmap(image_weather, bounds.centerX() - image_x_offset, bounds.exactCenterY() + image_y_offset, mWeatherImagePaint);
                     }
                 } else {
-                    //set temp to center
+                    //draw temperature to center of watchface
                     canvas.drawText(temp, bounds.centerX() - (mHighTempPaint.measureText(temp)) / 2, bounds.exactCenterY() + temp_y_offset, mHighTempPaint);
                 }
             }
