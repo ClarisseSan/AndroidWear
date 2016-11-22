@@ -1,9 +1,14 @@
 Go Ubiquitous
 ===================================
 
-![screenshot](https://cloud.githubusercontent.com/assets/16929740/20516294/d59c001a-b0d0-11e6-9074-13cfa59ef62d.png)
-
 Synchronizes weather information from OpenWeatherMap on Android phones, tablets and wearables. 
+
+Screenshots
+--------------
+<img src="https://cloud.githubusercontent.com/assets/16929740/20517436/f6269246-b0d5-11e6-90fd-03715a74c97e.png" width="800" height="500" >
+<img src="https://cloud.githubusercontent.com/assets/16929740/20517783/a644d06a-b0d7-11e6-8d39-f0c7a856ffdf.png" width="400" height="600" >
+<img src="https://cloud.githubusercontent.com/assets/16929740/20516294/d59c001a-b0d0-11e6-9074-13cfa59ef62d.png" width="300" height="300" >
+
 
 Pre-requisites
 --------------
